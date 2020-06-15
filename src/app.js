@@ -10,6 +10,31 @@ app.use(cors());
 const repositories = [];
 const likes = [];
 
+function logRequests(request, response, next) {
+  const { method, url } = request;
+
+  const logLabel = `[${method.toUpperCase()}] ${url}`;
+
+  console.time(logLabel);
+
+  next();
+
+  console.timeEnd(logLabel);
+}
+
+function validateRequestID(request, response, next){
+  const { id } = request.params;
+
+  if(!isUuid(id)){
+      console.log(`ERROR: Invalid ID ${id}`)
+      return response.status(400).json({ error: 'Invalid ID!'});
+  }
+
+  return next();
+}
+
+app.use(logRequests);
+
 app.get("/repositories", (request, response) => {
   return response.json(repositories);
 });
@@ -24,14 +49,14 @@ app.post("/repositories", (request, response) => {
   return response.json(repo);
 });
 
-app.put("/repositories/:id", (request, response) => {
+app.put("/repositories/:id", validateRequestID, (request, response) => {
   const { id } = request.params;
   const { title, url, techs } = request.body;
 
   const indexRepo = repositories.findIndex(repo => repo.id === id);
 
   if(indexRepo < 0){
-    return response.status(400).json({ error: 'Invalid repositorie ID!'});
+    return response.status(400).json({ error: 'The repository does not exist!'});
   }
 
   const repo = {
@@ -47,13 +72,13 @@ app.put("/repositories/:id", (request, response) => {
   return response.json(repo);
 });
 
-app.delete("/repositories/:id", (request, response) => {
+app.delete("/repositories/:id", validateRequestID, (request, response) => {
   const { id } = request.params;
 
   const indexRepo = repositories.findIndex(repo => repo.id === id);
 
   if(indexRepo < 0){
-    return response.status(400).json({ error: 'Invalid repositorie ID!'});
+    return response.status(400).json({ error: 'The repository does not exist!'});
   }
 
   repositories.splice(indexRepo, 1);
@@ -61,13 +86,13 @@ app.delete("/repositories/:id", (request, response) => {
   return response.status(204).send();
 });
 
-app.post("/repositories/:idRepo/like", (request, response) => {
-  const { idRepo } = request.params;
+app.post("/repositories/:id/like", validateRequestID, (request, response) => {
+  const { id: idRepo } = request.params;
 
   const indexRepo = repositories.findIndex(repo => repo.id === idRepo);
 
   if(indexRepo < 0){
-    return response.status(400).json({ error: 'Invalid repositorie ID!'});
+    return response.status(400).json({ error: 'The repository does not exist!'});
   }
 
   const like = {
@@ -82,8 +107,14 @@ app.post("/repositories/:idRepo/like", (request, response) => {
   return response.json(repositories[indexRepo]);
 });
 
-app.get("/repositories/:idRepo/like", (request, response) => {
-  const { idRepo } = request.params;
+app.get("/repositories/:id/like", validateRequestID, (request, response) => {
+  const { id: idRepo } = request.params;
+
+  const indexRepo = repositories.findIndex(repo => repo.id === idRepo);
+
+  if(indexRepo < 0){
+    return response.status(400).json({ error: 'The repository does not exist!'});
+  }
 
   const listLikes = likes.filter(like => like.idRepo === idRepo);
 

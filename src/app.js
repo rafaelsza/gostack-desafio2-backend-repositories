@@ -60,11 +60,10 @@ app.put("/repositories/:id", validateRequestID, (request, response) => {
   }
 
   const repo = {
-    id: repositories[indexRepo].id,
-    title,
-    url,
-    techs,
-    likes: repositories[indexRepo].likes
+    ...repositories[indexRepo],
+    title: title ? title : repositories[indexRepo].title,
+    url: url ? url: repositories[indexRepo].url,
+    techs: techs ? techs : repositories[indexRepo].techs
   }
 
   repositories[indexRepo] = repo;

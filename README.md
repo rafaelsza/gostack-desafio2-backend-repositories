@@ -14,7 +14,7 @@ git clone https://github.com/rafaelsza/gostack-desafio2.git
 
 Entra na pasta raíz:
 ```
-cd gostack-desafio2
+cd gostack-desafio2-backend-repositories
 ```
 
 Então executar yarn para instalar as dependências do projeto:

@@ -9,7 +9,7 @@ Utilizado:
 
 Para utilizar em sua máquina basta clonar o projeto:
 ```
-git clone https://github.com/rafaelsza/gostack-desafio2.git
+git clone https://github.com/rafaelsza/gostack-desafio2-backend-repositories.git
 ```
 
 Entra na pasta raíz:
